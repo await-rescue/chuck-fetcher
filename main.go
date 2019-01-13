@@ -22,7 +22,10 @@ func main() {
 
 		switch text {
 		case "start":
-			go fetcher.start()
+			err := fetcher.start()
+			if err != nil {
+				fmt.Println(err)
+			}
 		case "stop":
 			fetcher.stop()
 		default:

@@ -3,7 +3,7 @@ RUN mkdir /app
 ADD . /app/ 
 WORKDIR /app 
 RUN go build -o chuck . 
-CMD ["/app/chucky"]
+CMD ["/app/chuck"]
 
 # docker build --tag=chucky .
 # docker run  -it -d -p 80:8080 --name=ch chucky

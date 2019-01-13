@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -49,14 +50,15 @@ func (f *Fetcher) run() {
 }
 
 // Gets jokes and stores them - we could assign an ID for filename so we can run multiple
-func (f *Fetcher) start() {
+func (f *Fetcher) start() error {
 	if f.status != "running" {
-		f.run()
 		f.status = "running"
+		go f.run()
 	} else {
-		// Could be an error
-		fmt.Println("Processor is already running")
+		return errors.New("Fetcher is already running")
 	}
+
+	return nil
 }
 
 func (f *Fetcher) stop() {
@@ -76,7 +78,7 @@ func (f *Fetcher) flushCacheTimer() {
 func NewFetcher() *Fetcher {
 	cache := NewCache()
 	fetcher := Fetcher{"stopped", cache}
-	// Can we delay starting this until its run?
+	// Can we delay starting this until run?
 	go fetcher.flushCacheTimer()
 	return &fetcher
 }
