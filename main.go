@@ -20,12 +20,13 @@ func main() {
 	fetcher := NewFetcher()
 	for {
 		text := getInput()
-		// Case statement?
-		if text == "start" {
+
+		switch text {
+		case "start":
 			go fetcher.start()
-		} else if text == "stop" {
+		case "stop":
 			fetcher.stop()
-		} else {
+		default:
 			fmt.Println(fmt.Sprintf("Invalid command: %s", text))
 		}
 	}
