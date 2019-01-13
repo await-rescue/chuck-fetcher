@@ -8,7 +8,6 @@ import (
 )
 
 func getInput() string {
-	// Run our API caller in a go routine when user types 'start'
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
 	// Remove newline

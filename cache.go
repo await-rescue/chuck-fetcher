@@ -23,8 +23,8 @@ func (c *Cache) flush() {
 }
 
 // NewCache returns a Cache
-func NewCache() Cache {
+func NewCache() *Cache {
 	id := rand.Intn(100000)
 	cache := Cache{id, make([]*Joke, 0)}
-	return cache
+	return &cache
 }

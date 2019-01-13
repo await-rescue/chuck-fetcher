@@ -15,7 +15,7 @@ type Fetcher struct {
 }
 
 // TODO: we could parameterise this
-func (f *Fetcher) getRandomJoke() {
+func (f *Fetcher) getRandomJoke() *Joke {
 	response := Response{}
 
 	// TODO: timeouts
@@ -30,8 +30,11 @@ func (f *Fetcher) getRandomJoke() {
 		panic(err.Error())
 	}
 
-	// Should return this so we can add to cache
+	// return this so we can add to cache
+	// check whether it's safe to return a pointer
 	fmt.Println(response)
+
+	return &response.Value
 }
 
 func (f *Fetcher) run() {
@@ -40,30 +43,40 @@ func (f *Fetcher) run() {
 		if f.status != "running" {
 			break
 		}
-		f.getRandomJoke()
+		joke := f.getRandomJoke()
+		f.cache.add(joke)
 	}
 }
 
 // Gets jokes and stores them - we could assign an ID for filename so we can run multiple
 func (f *Fetcher) start() {
 	if f.status != "running" {
-		f.status = "running"
 		f.run()
+		f.status = "running"
 	} else {
 		// Could be an error
 		fmt.Println("Processor is already running")
 	}
-	// TODO: cache flushing
 }
 
 func (f *Fetcher) stop() {
 	f.status = "stopped"
+	fmt.Println(f.cache.Jokes[0])
 	f.cache.flush()
 }
 
+func (f *Fetcher) flushCacheTimer() {
+	ticker := time.NewTicker(time.Minute)
+	for range ticker.C {
+		f.cache.flush()
+	}
+}
+
 // NewFetcher returns a new Fetcher
-func NewFetcher() Fetcher {
+func NewFetcher() *Fetcher {
 	cache := NewCache()
-	fetcher := Fetcher{"stopped", &cache}
-	return fetcher
+	fetcher := Fetcher{"stopped", cache}
+	// Can we delay starting this until its run?
+	go fetcher.flushCacheTimer()
+	return &fetcher
 }
