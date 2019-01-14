@@ -19,10 +19,13 @@ type Fetcher struct {
 func (f *Fetcher) getRandomJoke() *Joke {
 	response := Response{}
 
-	// TODO: timeouts
-	res, err := http.Get(randomJokeURL)
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	res, err := client.Get(randomJokeURL)
 	if err != nil {
-		// Handle this in a better way
+		// Handle this in a better way/check timeouts work
 		panic(err.Error())
 	}
 
