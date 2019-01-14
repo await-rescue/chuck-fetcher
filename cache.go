@@ -17,13 +17,17 @@ func (c *Cache) add(joke *Joke) {
 	c.Jokes[joke.ID] = joke.Joke
 }
 
+// Flush the cache and dump to a file
 func (c *Cache) flush() {
 	file, err := os.OpenFile(c.path+c.filename, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
+		// Not sure if these should be fatal
 		log.Fatalf("Failed opening file: %s", err)
 	}
+	defer file.Close()
 
 	for _, v := range c.Jokes {
+		// TODO: could consider storing the id too
 		_, err := file.WriteString(fmt.Sprintf("%s%s", v, "\n"))
 		if err != nil {
 			log.Fatalf("Failed writing to file: %s", err)
@@ -31,6 +35,7 @@ func (c *Cache) flush() {
 	}
 
 	c.Jokes = make(map[int]string)
+	log.Println("Cache flushed")
 }
 
 // NewCache returns a Cache

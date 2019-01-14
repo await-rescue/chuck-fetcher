@@ -38,17 +38,14 @@ func (f *Fetcher) getRandomJoke() *Joke {
 }
 
 func (f *Fetcher) run() {
-	for {
-		time.Sleep(1 * time.Second)
-		if f.status != "running" {
-			break
-		}
+	for f.status == "running" {
+		time.Sleep(3 * time.Second)
 		joke := f.getRandomJoke()
+		// TODO: could try again if we get an existing key
 		f.cache.add(joke)
 	}
 }
 
-// Gets jokes and stores them - we could assign an ID for filename so we can run multiple
 func (f *Fetcher) start() error {
 	if f.status != "running" {
 		f.status = "running"
@@ -61,6 +58,7 @@ func (f *Fetcher) start() error {
 }
 
 func (f *Fetcher) stop() error {
+	// TODO: can we run this on program termination too?
 	if f.status != "stopped" {
 		f.status = "stopped"
 		f.cache.flush()
@@ -80,9 +78,9 @@ func (f *Fetcher) flushCacheTimer() {
 
 // NewFetcher returns a new Fetcher
 func NewFetcher() *Fetcher {
-	cache := NewCache("./cache/", "data.txt")
+	cache := NewCache("./cache/", "joke_data.txt")
 	fetcher := Fetcher{"stopped", cache}
-	// Can we delay starting this until run?
+	// TODO: Can we delay starting this until run (and not end up with multiple)?
 	go fetcher.flushCacheTimer()
 	return &fetcher
 }
