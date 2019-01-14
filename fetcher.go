@@ -16,17 +16,17 @@ type Fetcher struct {
 }
 
 // TODO: we could parameterise this
-func (f *Fetcher) getRandomJoke() *Joke {
-	response := Response{}
-
+func (f *Fetcher) getRandomJoke() (*Joke, error) {
 	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
 		Timeout: timeout,
 	}
+	response := Response{}
+
 	res, err := client.Get(randomJokeURL)
 	if err != nil {
-		// Handle this in a better way/check timeouts work
-		panic(err.Error())
+		log.Println(err)
+		return nil, err
 	}
 
 	err = json.NewDecoder(res.Body).Decode(&response)
@@ -34,15 +34,21 @@ func (f *Fetcher) getRandomJoke() *Joke {
 		panic(err.Error())
 	}
 
-	return &response.Value
+	return &response.Value, nil
 }
 
+// See if we can make this not callable from outside
 func (f *Fetcher) run() {
 	for f.status == "running" {
+		joke, err := f.getRandomJoke()
 		time.Sleep(3 * time.Second)
-		joke := f.getRandomJoke()
+		if err != nil {
+			// we can retry
+			continue
+		}
 		// TODO: could try again if we get an existing key
 		f.cache.add(joke)
+
 	}
 }
 

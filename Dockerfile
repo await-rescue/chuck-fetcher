@@ -1,13 +1,13 @@
 FROM golang:latest 
 RUN mkdir /app 
 ADD . /app/ 
-WORKDIR /app 
+WORKDIR /app
 RUN go build -o chuck . 
 CMD ["/app/chuck"]
 
-# docker build --tag=chucky .
+# docker build --tag=chuck .
 
-# docker run -it --name=ch chucky
+# docker run -it --name=ch chuck
 
 # docker run -it -d --name=ch chucky
 # docker attach ch
