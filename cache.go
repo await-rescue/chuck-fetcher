@@ -2,13 +2,15 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"log"
+	"os"
 )
 
-// Cache stores Jokes in memory
+// Cache stores Jokes in memory - check capitalisation
 type Cache struct {
-	ID    int
-	Jokes map[int]string
+	path     string
+	filename string
+	Jokes    map[int]string
 }
 
 func (c *Cache) add(joke *Joke) {
@@ -16,15 +18,38 @@ func (c *Cache) add(joke *Joke) {
 }
 
 func (c *Cache) flush() {
-	// TODO: write to file
-	fmt.Println("Flushing cache")
-	fmt.Println(c.Jokes)
+	file, err := os.OpenFile(c.path+c.filename, os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatalf("Failed opening file: %s", err)
+	}
+
+	for _, v := range c.Jokes {
+		_, err := file.WriteString(fmt.Sprintf("%s%s", v, "\n"))
+		if err != nil {
+			log.Fatalf("Failed writing to file: %s", err)
+		}
+	}
+
 	c.Jokes = make(map[int]string)
 }
 
 // NewCache returns a Cache
-func NewCache() *Cache {
-	id := rand.Intn(100000)
-	cache := Cache{id, make(map[int]string)}
+func NewCache(path string, filename string) *Cache {
+	cache := Cache{path, filename, make(map[int]string)}
+
+	// Clear any existing cache file, ignore errors if it doesn't exist
+	_ = os.RemoveAll(path)
+
+	// TODO: make persistant in docker
+	err := os.Mkdir(path, os.ModePerm)
+	if err != nil {
+		log.Fatalf("Failed to create dir: %s", err)
+	}
+
+	_, err = os.Create(path + filename)
+	if err != nil {
+		log.Fatalf("Failed to create file: %s", err)
+	}
+
 	return &cache
 }

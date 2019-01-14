@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -34,10 +34,6 @@ func (f *Fetcher) getRandomJoke() *Joke {
 		panic(err.Error())
 	}
 
-	// return this so we can add to cache
-	// check whether it's safe to return a pointer
-	fmt.Println(response)
-
 	return &response.Value
 }
 
@@ -57,17 +53,22 @@ func (f *Fetcher) start() error {
 	if f.status != "running" {
 		f.status = "running"
 		go f.run()
+		log.Println("Fetcher is running")
 	} else {
 		return errors.New("Fetcher is already running")
 	}
-
 	return nil
 }
 
-func (f *Fetcher) stop() {
-	f.status = "stopped"
-	fmt.Println(f.cache.Jokes[0])
-	f.cache.flush()
+func (f *Fetcher) stop() error {
+	if f.status != "stopped" {
+		f.status = "stopped"
+		f.cache.flush()
+		log.Println("Fetcher stopped")
+	} else {
+		return errors.New("Fetcher is already stopped")
+	}
+	return nil
 }
 
 func (f *Fetcher) flushCacheTimer() {
@@ -79,7 +80,7 @@ func (f *Fetcher) flushCacheTimer() {
 
 // NewFetcher returns a new Fetcher
 func NewFetcher() *Fetcher {
-	cache := NewCache()
+	cache := NewCache("./cache/", "data.txt")
 	fetcher := Fetcher{"stopped", cache}
 	// Can we delay starting this until run?
 	go fetcher.flushCacheTimer()
