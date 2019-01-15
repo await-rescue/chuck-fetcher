@@ -6,15 +6,15 @@ import (
 	"os"
 )
 
-// Cache stores Jokes in memory - check capitalisation
+// Cache stores data in memory - check capitalisation
 type Cache struct {
 	path     string
 	filename string
-	Jokes    map[int]string
+	data     map[int]string
 }
 
-func (c *Cache) add(joke *Joke) {
-	c.Jokes[joke.ID] = joke.Joke
+func (c *Cache) addJoke(joke *Joke) {
+	c.data[joke.ID] = joke.Joke
 }
 
 // Flush the cache and dump to a file
@@ -26,7 +26,7 @@ func (c *Cache) flush() {
 	}
 	defer file.Close()
 
-	for _, v := range c.Jokes {
+	for _, v := range c.data {
 		// TODO: could consider storing the id too
 		_, err := file.WriteString(fmt.Sprintf("%s%s", v, "\n"))
 		if err != nil {
@@ -34,13 +34,13 @@ func (c *Cache) flush() {
 		}
 	}
 
-	c.Jokes = make(map[int]string)
+	c.data = make(map[int]string)
 	log.Println("Cache flushed")
 }
 
 // NewCache returns a Cache and creates files for cache flushing
 func NewCache(path string, filename string) *Cache {
-	cache := Cache{path, filename, make(map[int]string)}
+	cache := Cache{path: path, filename: filename, data: make(map[int]string)}
 
 	// Clear any existing cache file, ignore errors if it doesn't exist
 	_ = os.RemoveAll(path)

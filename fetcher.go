@@ -21,7 +21,7 @@ func (f *Fetcher) getRandomJoke() (*Joke, error) {
 	client := http.Client{
 		Timeout: timeout,
 	}
-	response := Response{}
+	response := JokeResponse{}
 
 	res, err := client.Get(randomJokeURL)
 	if err != nil {
@@ -46,7 +46,7 @@ func (f *Fetcher) run() {
 			continue
 		}
 		// TODO: could try again if we get an existing key
-		f.cache.add(joke)
+		f.cache.addJoke(joke)
 		time.Sleep(3 * time.Second)
 	}
 }

@@ -8,8 +8,8 @@ type Joke struct {
 	Joke string `json:"joke"`
 }
 
-// A Response from the API for Joke objects
-type Response struct {
+// A JokeResponse from the API for Joke objects
+type JokeResponse struct {
 	Type  string `json:"type"`
 	Value Joke   `json:"value"`
 }
