@@ -41,14 +41,13 @@ func (f *Fetcher) getRandomJoke() (*Joke, error) {
 func (f *Fetcher) run() {
 	for f.status == "running" {
 		joke, err := f.getRandomJoke()
-		time.Sleep(3 * time.Second)
 		if err != nil {
-			// we can retry
+			// retry
 			continue
 		}
 		// TODO: could try again if we get an existing key
 		f.cache.add(joke)
-
+		time.Sleep(3 * time.Second)
 	}
 }
 

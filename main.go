@@ -27,7 +27,10 @@ func main() {
 				fmt.Println(err)
 			}
 		case "stop":
-			fetcher.stop()
+			err := fetcher.stop()
+			if err != nil {
+				fmt.Println(err)
+			}
 		default:
 			fmt.Println(fmt.Sprintf("Invalid command: %s", text))
 		}

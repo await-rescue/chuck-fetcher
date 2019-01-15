@@ -38,14 +38,14 @@ func (c *Cache) flush() {
 	log.Println("Cache flushed")
 }
 
-// NewCache returns a Cache
+// NewCache returns a Cache and creates files for cache flushing
 func NewCache(path string, filename string) *Cache {
 	cache := Cache{path, filename, make(map[int]string)}
 
 	// Clear any existing cache file, ignore errors if it doesn't exist
 	_ = os.RemoveAll(path)
 
-	// TODO: make persistant in docker
+	// TODO: make persistant in docker/mkdirs for full path?
 	err := os.Mkdir(path, os.ModePerm)
 	if err != nil {
 		log.Fatalf("Failed to create dir: %s", err)
