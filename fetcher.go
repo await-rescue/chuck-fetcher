@@ -15,7 +15,6 @@ type Fetcher struct {
 	cache  *Cache
 }
 
-// TODO: we could parameterise this
 func (f *Fetcher) getRandomJoke() (*Joke, error) {
 	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
@@ -29,6 +28,8 @@ func (f *Fetcher) getRandomJoke() (*Joke, error) {
 		return nil, err
 	}
 
+	// TODO: check response code
+
 	err = json.NewDecoder(res.Body).Decode(&response)
 	if err != nil {
 		panic(err.Error())
@@ -37,7 +38,6 @@ func (f *Fetcher) getRandomJoke() (*Joke, error) {
 	return &response.Value, nil
 }
 
-// See if we can make this not callable from outside
 func (f *Fetcher) run() {
 	for f.status == "running" {
 		joke, err := f.getRandomJoke()
@@ -54,6 +54,7 @@ func (f *Fetcher) run() {
 func (f *Fetcher) start() error {
 	if f.status != "running" {
 		f.status = "running"
+		// Could just put the function here in full to avoid run() being called
 		go f.run()
 		log.Println("Fetcher is running")
 	} else {
@@ -63,7 +64,6 @@ func (f *Fetcher) start() error {
 }
 
 func (f *Fetcher) stop() error {
-	// TODO: can we run this on program termination too?
 	if f.status != "stopped" {
 		f.status = "stopped"
 		f.cache.flush()

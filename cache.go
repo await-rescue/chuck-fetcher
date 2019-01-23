@@ -21,14 +21,12 @@ func (c *Cache) addJoke(joke *Joke) {
 func (c *Cache) flush() {
 	file, err := os.OpenFile(c.path+c.filename, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		// Not sure if these should be fatal
 		log.Fatalf("Failed opening file: %s", err)
 	}
 	defer file.Close()
 
-	for _, v := range c.data {
-		// TODO: could consider storing the id too
-		_, err := file.WriteString(fmt.Sprintf("%s%s", v, "\n"))
+	for _, value := range c.data {
+		_, err := file.WriteString(fmt.Sprintf("%s%s", value, "\n"))
 		if err != nil {
 			log.Fatalf("Failed writing to file: %s", err)
 		}
@@ -45,15 +43,14 @@ func NewCache(path string, filename string) *Cache {
 	// Clear any existing cache file, ignore errors if it doesn't exist
 	_ = os.RemoveAll(path)
 
-	// TODO: make persistant in docker/mkdirs for full path?
 	err := os.Mkdir(path, os.ModePerm)
 	if err != nil {
-		log.Fatalf("Failed to create dir: %s", err)
+		log.Printf("Failed to create dir: %s", err)
 	}
 
 	_, err = os.Create(path + filename)
 	if err != nil {
-		log.Fatalf("Failed to create file: %s", err)
+		log.Printf("Failed to create file: %s", err)
 	}
 
 	return &cache

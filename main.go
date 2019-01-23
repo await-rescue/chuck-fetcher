@@ -31,8 +31,14 @@ func main() {
 			if err != nil {
 				fmt.Println(err)
 			}
+		case "exit":
+			err := fetcher.stop()
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.Exit(0)
 		default:
-			fmt.Println(fmt.Sprintf("Invalid command: %s", text))
+			fmt.Println(fmt.Sprintf("Invalid command: %s\n Available commands - [start, stop, exit]", text))
 		}
 	}
 }
