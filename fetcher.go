@@ -28,8 +28,6 @@ func (f *Fetcher) getRandomJoke() (*Joke, error) {
 		return nil, err
 	}
 
-	// TODO: check response code
-
 	err = json.NewDecoder(res.Body).Decode(&response)
 	if err != nil {
 		panic(err.Error())
@@ -45,7 +43,6 @@ func (f *Fetcher) run() {
 			// retry
 			continue
 		}
-		// TODO: could try again if we get an existing key
 		f.cache.addJoke(joke)
 		time.Sleep(3 * time.Second)
 	}
@@ -54,7 +51,6 @@ func (f *Fetcher) run() {
 func (f *Fetcher) start() error {
 	if f.status != "running" {
 		f.status = "running"
-		// Could just put the function here in full to avoid run() being called
 		go f.run()
 		log.Println("Fetcher is running")
 	} else {
@@ -85,7 +81,6 @@ func (f *Fetcher) flushCacheTimer() {
 func NewFetcher() *Fetcher {
 	cache := NewCache("./cache/", "joke_data.txt")
 	fetcher := Fetcher{"stopped", cache}
-	// TODO: Can we delay starting this until run (and not end up with multiple)?
 	go fetcher.flushCacheTimer()
 	return &fetcher
 }
