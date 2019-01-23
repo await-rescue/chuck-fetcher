@@ -10,7 +10,6 @@ import (
 
 // Fetcher gets data from an external API
 type Fetcher struct {
-	// Check capitalisation stuff
 	status string
 	cache  *Cache
 }
